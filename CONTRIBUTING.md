@@ -1,0 +1,3 @@
+- Python 3.8+
+- Run `ruff` and `pytest` locally
+- Keep CSVs small; improve coverage via PRs
