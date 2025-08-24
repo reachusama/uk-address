@@ -12,8 +12,8 @@ from typing import List, Optional
 from importlib import resources
 from platformdirs import user_cache_dir, user_config_dir
 
-PKG = "ukaddress_ner"
-APP = "ukaddress-ner"
+PKG = "ukaddress"
+APP = "ukaddress"
 
 CONFIG_DIR = Path(user_config_dir(APP))
 CACHE_DIR = Path(user_cache_dir(APP))
@@ -92,7 +92,7 @@ def resolve_model_path(explicit: Optional[str] = None) -> Path:
         if p.is_file():
             return p
         raise FileNotFoundError(f"Explicit model path not found: {explicit}")
-    env = os.getenv("UKADDRESS_NER_MODEL")
+    env = os.getenv("UKADDRESS_MODEL")
     if env:
         p = Path(env).expanduser()
         if p.is_file():
@@ -104,9 +104,9 @@ def resolve_model_path(explicit: Optional[str] = None) -> Path:
     p = _baseline_as_file()
     if p: return p
     raise FileNotFoundError(
-        "No model found. Put a model at ~/.cache/ukaddress-ner/models, set UKADDRESS_NER_MODEL, "
-        "or add a packaged baseline at src/ukaddress_ner/data/models/base.crfsuite. "
-        "You can also run: ukaddress-ner models download <name> <url> --sha256 <hash>"
+        "No model found. Put a model at ~/.cache/ukaddress/models, set UKADDRESS_MODEL, "
+        "or add a packaged baseline at src/uk-address/data/models/base.crfsuite. "
+        "You can also run: ukaddress models download <name> <url> --sha256 <hash>"
     )
 
 

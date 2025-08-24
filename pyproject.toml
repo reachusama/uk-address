@@ -3,8 +3,8 @@ requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
 
 [project]
-name = "ukaddress-ner"
-version = "1.0.0"
+name = "uk-address"
+version = "0.0.1"
 authors = [
   { name="Usama Shahid", email="usamashahid.us8@gmail.com" },
 ]
@@ -26,17 +26,25 @@ train = ["sklearn-crfsuite>=0.3.6", "scikit-learn>=1.3"]
 dev = ["pytest>=7.4", "ruff>=0.5.6", "mypy>=1.10"]
 
 [project.urls]
-Homepage = "https://github.com/reachusama/ukaddress-ner"
-Issues   = "https://github.com/reachusama/ukaddress-ner/issues"
+Homepage = "https://github.com/reachusama/uk-address"
+Issues   = "https://github.com/reachusama/uk-address/issues"
 
 [project.scripts]
-ukaddress-ner = "ukaddress_ner.cli:main"
+uk-address = "ukaddress.cli:main"
+ukaddress  = "ukaddress.cli:main" # alias
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/ukaddress_ner"]
+packages = ["src/ukaddress"]
 
 [tool.hatch.build]
 include = [
-  "src/ukaddress_ner/data/**",
-  "src/ukaddress_ner/data/models/**",
+  "src/ukaddress/data/**",
+  "src/ukaddress/data/models/**",
+]
+exclude = [
+  "**/__pycache__/**",
+  "**/.DS_Store",
+  "**/*.py[cod]",
+  "**/*$py.class",
+  ".env"
 ]

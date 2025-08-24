@@ -1,7 +1,7 @@
 import pytest
-from ukaddress_ner.postcode import normalize_postcode, extract_outcode, get_post_town, get_county, PostcodeNotFound
-from ukaddress_ner.tokens import tokenize
-from ukaddress_ner import tag
+from ukaddress.postcode import normalize_postcode, extract_outcode, get_post_town, get_county, PostcodeNotFound
+from ukaddress.tokens import tokenize
+from ukaddress import tag
 
 
 # def test_postcode_normalize():

@@ -81,7 +81,7 @@ nonCountyIdentification = list(sorted(noncounty))
 
 @lru_cache(maxsize=1)
 def _load_counties() -> List[str]:
-    with resources.files("ukaddress_ner.data.lookups").joinpath("counties.csv").open("rb") as f:
+    with resources.files("ukaddress.data.lookups").joinpath("counties.csv").open("rb") as f:
         df = pd.read_csv(f, usecols=["county"], dtype=str, encoding="utf-8-sig")
     return (
         df["county"]
@@ -94,14 +94,14 @@ def _load_counties() -> List[str]:
 
 @lru_cache(maxsize=1)
 def _load_synonyms() -> Dict[str, str]:
-    with resources.files("ukaddress_ner.data.lookups").joinpath("synonyms.csv").open("rb") as f:
+    with resources.files("ukaddress.data.lookups").joinpath("synonyms.csv").open("rb") as f:
         df = pd.read_csv(f, usecols=["from", "to"], dtype=str, encoding="utf-8-sig").dropna()
     return dict(zip(df["from"].str.strip(), df["to"].str.strip()))
 
 
 @lru_cache(maxsize=1)
 def _load_outcode_posttown() -> Tuple[set, set]:
-    with resources.files("ukaddress_ner.data.lookups").joinpath("postcode_district_to_town.csv").open("rb") as f:
+    with resources.files("ukaddress.data.lookups").joinpath("postcode_district_to_town.csv").open("rb") as f:
         df = pd.read_csv(f, dtype=str, encoding="utf-8-sig")
     outcodes = set(df["postcode"].astype(str).str.strip().str.upper().tolist())
     towns = set(df["town"].astype(str).str.strip().str.upper().tolist())
