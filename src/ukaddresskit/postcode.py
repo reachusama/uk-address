@@ -10,9 +10,10 @@ from __future__ import annotations
 
 import re
 from functools import lru_cache
-from typing import Optional
-import pandas as pd
 from importlib import resources
+from typing import Optional
+
+import pandas as pd
 
 
 class PostcodeNotFound(KeyError):
@@ -56,7 +57,9 @@ def extract_outcode(pc: str) -> str:
 
 @lru_cache(maxsize=1)
 def _load_postcode_town_df() -> pd.DataFrame:
-    with resources.files("ukaddress_ner.data.lookups").joinpath("postcode_district_to_town.csv").open("rb") as f:
+    with resources.files("ukaddresskit.data.lookups").joinpath(
+        "postcode_district_to_town.csv"
+    ).open("rb") as f:
         return pd.read_csv(f, dtype=str, encoding="utf-8-sig").rename(
             columns={"postcode": "outcode", "town": "post_town"}
         )
@@ -65,7 +68,9 @@ def _load_postcode_town_df() -> pd.DataFrame:
 @lru_cache(maxsize=1)
 def _load_outcode_county_df() -> pd.DataFrame:
     # Small editable mapping; ships with the package and can be extended.
-    with resources.files("ukaddress_ner.data.lookups").joinpath("outcode_to_county.csv").open("rb") as f:
+    with resources.files("ukaddresskit.data.lookups").joinpath(
+        "outcode_to_county.csv"
+    ).open("rb") as f:
         return pd.read_csv(f, dtype=str, encoding="utf-8-sig").rename(
             columns={"outcode": "outcode", "county": "county"}
         )

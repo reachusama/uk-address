@@ -4,16 +4,23 @@ Model management:
 - download_model(): downloads to user cache with optional sha256
 - list_installed_models(), set_default_model()
 """
+
 from __future__ import annotations
-import hashlib, json, os, shutil, urllib.request
+
+import hashlib
+import json
+import os
+import shutil
+import urllib.request
 from dataclasses import dataclass
+from importlib import resources
 from pathlib import Path
 from typing import List, Optional
-from importlib import resources
+
 from platformdirs import user_cache_dir, user_config_dir
 
-PKG = "ukaddress"
-APP = "ukaddress"
+PKG = "ukaddresskit"
+APP = "ukaddresskit"
 
 CONFIG_DIR = Path(user_config_dir(APP))
 CACHE_DIR = Path(user_cache_dir(APP))
@@ -79,7 +86,7 @@ def set_default_model(path_or_name: str) -> Path:
     if candidate.is_file():
         _write_default_pointer(candidate)
         return candidate
-    candidate = (MODELS_DIR / f"{path_or_name}.crfsuite")
+    candidate = MODELS_DIR / f"{path_or_name}.crfsuite"
     if candidate.is_file():
         _write_default_pointer(candidate)
         return candidate
@@ -98,15 +105,18 @@ def resolve_model_path(explicit: Optional[str] = None) -> Path:
         if p.is_file():
             return p
     p = _read_config_model_path()
-    if p: return p
+    if p:
+        return p
     p = _read_default_pointer()
-    if p: return p
+    if p:
+        return p
     p = _baseline_as_file()
-    if p: return p
+    if p:
+        return p
     raise FileNotFoundError(
-        "No model found. Put a model at ~/.cache/ukaddress/models, set UKADDRESS_MODEL, "
+        "No model found. Put a model at ~/.cache/ukaddresskit/models, set UKADDRESS_MODEL, "
         "or add a packaged baseline at src/uk-address/data/models/base.crfsuite. "
-        "You can also run: ukaddress models download <name> <url> --sha256 <hash>"
+        "You can also run: ukaddresskit models download <name> <url> --sha256 <hash>"
     )
 
 
@@ -118,7 +128,9 @@ def _sha256_of(path: Path) -> str:
     return h.hexdigest()
 
 
-def download_model(name: str, url: str, sha256: Optional[str] = None, make_default: bool = True) -> Path:
+def download_model(
+    name: str, url: str, sha256: Optional[str] = None, make_default: bool = True
+) -> Path:
     _ensure_dirs()
     dest = MODELS_DIR / f"{name}.crfsuite"
     tmp = dest.with_suffix(".tmp")
@@ -128,7 +140,9 @@ def download_model(name: str, url: str, sha256: Optional[str] = None, make_defau
         got = _sha256_of(tmp)
         if got.lower() != sha256.lower():
             tmp.unlink(missing_ok=True)
-            raise ValueError(f"SHA256 mismatch for {name}: expected {sha256}, got {got}")
+            raise ValueError(
+                f"SHA256 mismatch for {name}: expected {sha256}, got {got}"
+            )
     tmp.replace(dest)
     if make_default:
         _write_default_pointer(dest)
