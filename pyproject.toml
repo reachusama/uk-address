@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ukaddress-ner"
-version = "0.0.1"
+version = "1.0.0"
 authors = [
   { name="Usama Shahid", email="usamashahid.us8@gmail.com" },
 ]
@@ -15,8 +15,8 @@ requires-python = ">=3.8"
 keywords = ["NER", "addresses", "UK", "CRF", "pycrfsuite", "postcode"]
 
 dependencies = [
-  "pycrfsuite>=0.9.9",
-  "lxml>=5.0.0",
+  "python-crfsuite>=0.9.11",
+  "lxml>=6.0.1",
   "pandas>=2.0.0",
   "platformdirs>=4.2.2",
 ]
