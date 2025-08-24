@@ -1,6 +1,7 @@
 import pytest
 from ukaddress_ner.postcode import normalize_postcode, extract_outcode, get_post_town, get_county, PostcodeNotFound
 from ukaddress_ner.tokens import tokenize
+from ukaddress_ner import tag
 
 
 # def test_postcode_normalize():
@@ -24,3 +25,10 @@ def test_tokenize_basic():
     toks = tokenize(s)
     assert "FLAT" in [t.upper() for t in toks]
     assert any("BL8" in t for t in toks)
+
+
+def test_tag_basic():
+    s = "Flat 2, 10 Queen Street, Bury BL8 1JG"
+    tags = tag(s)
+    assert tags == {'SubBuildingName': 'FLAT 2', 'BuildingNumber': '10', 'StreetName': 'QUEEN STREET',
+                    'TownName': 'BURY', 'Postcode': 'BL8 1JG'}
