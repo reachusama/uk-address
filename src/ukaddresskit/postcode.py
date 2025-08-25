@@ -5,7 +5,7 @@ Features
 --------
 - normalize_postcode("sw1a1aa") -> "SW1A 1AA"
 - extract_outcode("SW1A 1AA")   -> "SW1A"
-- get_post_town(outcode|pc)     -> post town (from packaged CSV)
+- get_town(outcode|pc)     -> post town (from packaged CSV)
 - get_county(outcode|pc)        -> county or None (best-effort; from packaged CSV)
 
 Notes
@@ -151,7 +151,7 @@ def _load_outcode_county_df() -> pd.DataFrame:
         )
 
 
-def get_post_town(pc_or_outcode: str) -> str:
+def get_town(pc_or_outcode: str) -> str:
     """
     Lookup post town by outcode using packaged CSV.
     Accepts either a full postcode or an outcode.

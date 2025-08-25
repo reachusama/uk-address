@@ -89,8 +89,16 @@ get_county("SW1A 2AA")         # "Greater London" (if in mapping)
 
 ## Todo
 
-- [ ] Add outcode_to_county.csv into lookups
+- [x] Add outcode_to_county.csv into lookups
 - [x] Fix bugs in library not loading on Colab
+- [ ] Create postcode fill utility
+  - [x] get_town(postcode)
+  - [x] get_county(postcode)
+  - [ ] get_locality(postcode)
+  - [ ] get_streets(postcode) → array of street names
+  - [ ] get_address_counts(postcode)
+  - [ ] property mix at postcode
+- [ ] Create address populate utility (add missing address components - town, county, etc)
 - [ ] Create address linkage utility
 - [ ] Create address formatting utility
 - [ ] Define test cases, organise code
