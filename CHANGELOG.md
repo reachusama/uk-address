@@ -13,3 +13,8 @@
 ## 0.0.4 
 
 - Updating .toml to exclude cache files in packaging
+
+## 0.0.5
+
+- Add utility for pre/post processing
+- Updated readme
