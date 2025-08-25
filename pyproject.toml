@@ -11,7 +11,7 @@ authors = [
 maintainers = [
   {name = "Usama Shahid", email = "usamashahid.us8@gmail.com"}
 ]
-description = "UK address parser and named entity recognition (NER) using machine learning with utilities."
+description = "UK address utility based on machine learning and optimised search to parse, standardise, and compare addresses."
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.8"
