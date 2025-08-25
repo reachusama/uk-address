@@ -433,14 +433,3 @@ def tokenize(raw_string):
     re_tokens = re.compile(r"\(*\b[^\s,;#&()]+[.,;)\n]*|[#&]", re.VERBOSE | re.UNICODE)
     out = re_tokens.findall(preprocessed_string)
     return out if out else []
-
-
-def readData(xmlFile: str):
-    data = readXML(xmlFile)
-    X: List[List[Dict]] = []
-    y: List[List[str]] = []
-    for _, components in data:
-        tokens, labels = list(zip(*components)) if components else ([], [])
-        X.append(tokens2features(list(tokens)))
-        y.append(list(labels))
-    return X, y

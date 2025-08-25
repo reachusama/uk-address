@@ -4,6 +4,7 @@ __pycache__/
 .DS_Store
 /.idea
 /.env
-
+test.py
+/test.py
 __pycache__/
 *.py[cod]
