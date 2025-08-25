@@ -91,5 +91,7 @@ get_county("SW1A 2AA")         # "Greater London" (if in mapping)
 
 - [ ] Add outcode_to_county.csv into lookups
 - [x] Fix bugs in library not loading on Colab
-- [ ] 
-  Create [online docs](https://medium.com/practical-coding/documenting-your-python-library-from-zero-to-website-488f87ae58f5)
+- [ ] Create address linkage utility
+- [ ] Create address formatting utility
+- [ ] Define test cases, organise code
+- [ ] Create [online docs](https://medium.com/practical-coding/documenting-your-python-library-from-zero-to-website-488f87ae58f5)
