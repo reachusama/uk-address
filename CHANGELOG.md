@@ -16,5 +16,7 @@
 
 ## 0.0.5
 
-- Add utility for pre/post processing
-- Updated readme
+- Add utility for pre/post processing (no testing in alpha)
+- Updated support for use postcode for county, town
+- Updated support for use locality for town
+- Updated readme for devs
