@@ -14,7 +14,7 @@ from .postcode import (
     PostcodeNotFound,
     extract_outcode,
     get_county,
-    get_post_town,
+    get_town,
     normalize_postcode,
 )
 
@@ -25,7 +25,6 @@ __all__ = [
     "tag",
     "normalize_postcode",
     "extract_outcode",
-    "get_post_town",
     "get_county",
     "PostcodeNotFound",
     "resolve_model_path",

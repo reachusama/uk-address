@@ -29,11 +29,23 @@ print(tag("10 Downing Street SW1A 2AA"))
 **Postcode Helpers**
 
 ```python
-from ukaddresskit.postcode import normalize_postcode, get_post_town, get_county
+from ukaddresskit.postcode import *
 
 normalize_postcode("sw1a2aa")  # "SW1A 2AA"
 get_town("SW1A 2AA")      # "LONDON"
 get_county("SW1A 2AA")         # "Greater London" (if in mapping)
+get_county("SW1A 2AA") 
+get_locality(postcode: str)
+get_streets(postcode: str)
+get_property_mix(postcode: str) -> Dict[str, float]
+
+---
+
+from ukaddresskit.locality import *
+
+get_town_by_locality("Ab Kettleby")                 -> "MELTON MOWBRAY"
+get_town_by_locality("Abberton", ambiguity="all")   -> ["COLCHESTER", "PERSHORE"]
+list_towns_for_locality("Abberton")                 -> ["COLCHESTER", "PERSHORE"]
 ```
 
 ## Todo
@@ -45,8 +57,8 @@ get_county("SW1A 2AA")         # "Greater London" (if in mapping)
     - [x] get_county(postcode)
     - [ ] get_locality(postcode)
     - [ ] get_streets(postcode) → array of street names
-    - [ ] get_address_counts(postcode)
-    - [ ] property mix at postcode
+    - [ ] get_property_mix(postcode)
+- [ ] Create .parquet sqlite storage, indexes for optimal searches
 - [ ] Create address populate utility (add missing address components - town, county, etc)
 - [ ] Create address linkage utility
 - [ ] Define test cases, organise code

@@ -5,13 +5,18 @@ Features
 --------
 - normalize_postcode("sw1a1aa") -> "SW1A 1AA"
 - extract_outcode("SW1A 1AA")   -> "SW1A"
-- get_town(outcode|pc)     -> post town (from packaged CSV)
+- get_town(outcode|pc)          -> post town (from packaged CSV)
 - get_county(outcode|pc)        -> county or None (best-effort; from packaged CSV)
+- get_locality(pc)              -> locality name for a full postcode
+- get_streets(pc)               -> list of street names for a postcode
+- get_property_mix(pc)          -> dict of property-type mix at postcode (e.g., detached, flats, etc.)
 
 Notes
 -----
 - Validation follows the standard UK postcode pattern (including GIR 0AA).
 - Common user typo fixed: if the single incode digit is 'O', it's auto-corrected to '0'.
+- All postcode-level lookups normalise to compact form (e.g. 'SW1A1AA') for matching.
+- Underlying CSVs are packaged with the library and can be updated as new data is available.
 """
 
 from __future__ import annotations
@@ -19,13 +24,13 @@ from __future__ import annotations
 import re
 from functools import lru_cache
 from importlib import resources
-from typing import Optional
+from typing import Dict, List, Optional
 
 import pandas as pd
 
 
 class PostcodeNotFound(KeyError):
-    """Raised when no lookup result exists for a valid outcode."""
+    """Raised when no lookup result exists for a valid postcode or outcode."""
     pass
 
 
@@ -123,6 +128,13 @@ def extract_outcode(pc_or_outcode: str) -> str:
     raise ValueError(f"Invalid UK postcode or outcode: {pc_or_outcode!r}")
 
 
+def _normalize_postcode_compact(pc: str) -> str:
+    """
+    Normalize to strict postcode then remove the internal space: 'SW1A 1AA' -> 'SW1A1AA'.
+    """
+    return normalize_postcode(pc).replace(" ", "")
+
+
 @lru_cache(maxsize=1)
 def _load_postcode_town_df() -> pd.DataFrame:
     """
@@ -151,6 +163,66 @@ def _load_outcode_county_df() -> pd.DataFrame:
         )
 
 
+# === New packaged data loaders (postcode-level) ==============================
+
+@lru_cache(maxsize=1)
+def _load_postcode_locality_df() -> pd.DataFrame:
+    """
+    Load mapping: postcode_to_locality.csv
+    Expected columns: 'postcode', 'locality'
+    Postcodes should be compact (no space) or will be compacted at lookup time.
+    """
+    with resources.files("ukaddresskit.data.lookups").joinpath(
+            "postcode_to_locality.csv"
+    ).open("rb") as f:
+        df = pd.read_csv(f, dtype=str, encoding="utf-8-sig").rename(
+            columns={"postcode": "postcode", "locality": "locality"}
+        )
+    # Ensure a compact version for joins
+    df["pc_compact"] = df["postcode"].str.replace(r"\s+", "", regex=True).str.upper()
+    return df
+
+
+@lru_cache(maxsize=1)
+def _load_postcode_streets_df() -> pd.DataFrame:
+    """
+    Load mapping: postcode_to_streets.csv
+    Expected columns: 'postcode', 'street'
+    One row per (postcode, street) pair.
+    """
+    with resources.files("ukaddresskit.data.lookups").joinpath(
+            "postcode_to_streets.csv"
+    ).open("rb") as f:
+        df = pd.read_csv(f, dtype=str, encoding="utf-8-sig").rename(
+            columns={"postcode": "postcode", "street": "street"}
+        )
+    df["pc_compact"] = df["postcode"].str.replace(r"\s+", "", regex=True).str.upper()
+    return df
+
+
+@lru_cache(maxsize=1)
+def _load_postcode_property_mix_df() -> pd.DataFrame:
+    """
+    Load mapping: postcode_property_mix.csv
+    Expected columns: 'postcode', plus any set of property-type columns
+    (e.g., 'detached', 'semi_detached', 'terraced', 'flats', etc.).
+    Values may be counts or percentages; this function just returns what's provided.
+    """
+    with resources.files("ukaddresskit.data.lookups").joinpath(
+            "postcode_property_mix.csv"
+    ).open("rb") as f:
+        df = pd.read_csv(f, dtype=str, encoding="utf-8-sig")
+    df = df.rename(columns={"postcode": "postcode"})
+    df["pc_compact"] = df["postcode"].str.replace(r"\s+", "", regex=True).str.upper()
+    # Try to coerce all non-id columns to numeric where possible; keep strings otherwise.
+    for col in df.columns:
+        if col not in ("postcode", "pc_compact"):
+            df[col] = pd.to_numeric(df[col], errors="ignore")
+    return df
+
+
+# === Existing outcode-level lookups ==========================================
+
 def get_town(pc_or_outcode: str) -> str:
     """
     Lookup post town by outcode using packaged CSV.
@@ -177,3 +249,91 @@ def get_county(pc_or_outcode: str) -> Optional[str]:
     if row.empty:
         return None
     return row.iloc[0]["county"]
+
+
+# === New postcode-level utilities ============================================
+
+def get_locality(postcode: str) -> str:
+    """
+    Return the locality (e.g., dependent locality / village / hamlet) for a full postcode.
+    Raises:
+        ValueError: if the postcode is invalid.
+        PostcodeNotFound: if there is no locality for this postcode.
+    """
+    pc_compact = _normalize_postcode_compact(postcode)
+    df = _load_postcode_locality_df()
+    row = df.loc[df["pc_compact"] == pc_compact]
+    if row.empty:
+        raise PostcodeNotFound(f"No locality found for postcode {pc_compact}")
+    # Prefer the first match if duplicates exist.
+    val = row.iloc[0]["locality"]
+    return None if pd.isna(val) or str(val).strip() == "" else str(val)
+
+
+def get_streets(postcode: str) -> List[str]:
+    """
+    Return a list of street names present at a full postcode.
+    The result is case-insensitive unique and uppercased for consistency.
+    Raises:
+        ValueError: if the postcode is invalid.
+        PostcodeNotFound: if the postcode is not present in the mapping.
+    """
+    pc_compact = _normalize_postcode_compact(postcode)
+    df = _load_postcode_streets_df()
+    sub = df.loc[df["pc_compact"] == pc_compact]
+    if sub.empty:
+        raise PostcodeNotFound(f"No streets found for postcode {pc_compact}")
+
+    streets = (
+        sub["street"]
+        .dropna()
+        .map(lambda s: str(s).strip().upper())  # <- normalize to uppercase
+        .loc[lambda s: s.ne("")]
+        .drop_duplicates()  # case-insensitive uniqueness
+        .sort_values()
+        .tolist()
+    )
+    return streets
+
+
+def get_property_mix(postcode: str) -> Dict[str, float]:
+    """
+    Return the property mix for a full postcode as a dict of {category: value}.
+    Categories depend on the packaged CSV (e.g., 'detached', 'semi_detached', 'terraced', 'flats').
+    Values are returned as-is from the data source (counts or percentages).
+
+    Raises:
+        ValueError: if the postcode is invalid.
+        PostcodeNotFound: if the postcode is not present in the mapping.
+    """
+    pc_compact = _normalize_postcode_compact(postcode)
+    df = _load_postcode_property_mix_df()
+    row = df.loc[df["pc_compact"] == pc_compact]
+    if row.empty:
+        raise PostcodeNotFound(f"No property mix found for postcode {pc_compact}")
+
+    row0 = row.iloc[0]
+    out: Dict[str, float] = {}
+    for col in df.columns:
+        if col in ("postcode", "pc_compact"):
+            continue
+        val = row0[col]
+        if pd.isna(val):
+            continue
+        # Try numeric first; if not numeric, keep as string but skip blanks.
+        if isinstance(val, (int, float)):
+            out[col] = float(val)
+        else:
+            sval = str(val).strip()
+            if sval == "":
+                continue
+            try:
+                out[col] = float(sval)
+            except ValueError:
+                # Non-numeric free text; you may choose to include it,
+                # but here we only include numeric categories in the mix.
+                continue
+    if not out:
+        # No usable categories present
+        raise PostcodeNotFound(f"No numeric property categories for postcode {pc_compact}")
+    return out
