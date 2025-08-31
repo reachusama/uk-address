@@ -1,12 +1,7 @@
 # ukaddresskit
 
-<!-- CI status -->
 [![CI](https://github.com/reachusama/ukaddresskit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/reachusama/ukaddresskit/actions/workflows/ci.yml)
-
-<!-- PyPI version -->
 [![PyPI version](https://img.shields.io/pypi/v/ukaddresskit.svg)](https://pypi.org/project/ukaddresskit/)
-
-<!-- Downloads (pepy) -->
 [![Downloads](https://static.pepy.tech/badge/ukaddresskit)](https://pepy.tech/project/ukaddresskit)
 
 [//]: # (<!-- Optional: Coverage &#40;Codecov&#41; -->)
