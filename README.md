@@ -1,5 +1,18 @@
 # ukaddresskit
 
+<!-- CI status -->
+[![CI](https://github.com/reachusama/ukaddresskit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/reachusama/ukaddresskit/actions/workflows/ci.yml)
+
+<!-- PyPI version -->
+[![PyPI version](https://img.shields.io/pypi/v/ukaddresskit.svg)](https://pypi.org/project/ukaddresskit/)
+
+<!-- Downloads (pepy) -->
+[![Downloads](https://static.pepy.tech/badge/ukaddresskit)](https://pepy.tech/project/ukaddresskit)
+
+[//]: # (<!-- Optional: Coverage &#40;Codecov&#41; -->)
+
+[//]: # ([![codecov]&#40;https://codecov.io/gh/OWNER/REPO/branch/main/graph/badge.svg&#41;]&#40;https://codecov.io/gh/OWNER/REPO&#41;)
+
 UK address utility based on machine learning and optimised search to parse, standardise, and compare addresses.
 
 Address NER tagger is trained using crfsuite with help of 2 million uk housing addresses.
@@ -52,19 +65,21 @@ list_towns_for_locality("Abberton")                 -> ["COLCHESTER", "PERSHORE"
 
 - [x] Add outcode_to_county.csv into lookups
 - [x] Fix bugs in library not loading on Colab
-- [ ] Create postcode fill utility
+- [x] Create postcode fill utility
     - [x] get_town(postcode)
     - [x] get_county(postcode)
-    - [ ] get_locality(postcode)
-    - [ ] get_streets(postcode) → array of street names
-    - [ ] get_property_mix(postcode)
-- [ ] Create .parquet sqlite storage, indexes for optimal searches
+    - [x] get_locality(postcode)
+    - [x] get_streets(postcode) → array of street names
+    - [x] get_property_mix(postcode)
+    - [x] add test cases
 - [ ] Create address populate utility (add missing address components - town, county, etc)
-- [ ] Create address linkage utility
+- [ ] Create address linkage utility / comparing
 - [ ] Define test cases, organise code
 - [ ] Improve machine learning models
+- [ ] Create .parquet sqlite storage, indexes for optimal searches
 - [ ] 
   Create [online docs](https://medium.com/practical-coding/documenting-your-python-library-from-zero-to-website-488f87ae58f5)
+- [ ] Improve Address Parser
 
 **AddressParser (Pre & Post processing -- needs testing)**
 

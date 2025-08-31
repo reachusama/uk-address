@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -U pip
+          # install your package + test deps; adjust as needed
+          pip install -e .[test] || pip install -e .
+          pip install pytest pytest-cov
+
+      - name: Run tests
+        run: |
+          pytest -q --maxfail=1 --disable-warnings --cov=ukaddresskit --cov-report=xml
+
+      # Optional: publish coverage to Codecov (public repos don’t need a token)
+      - name: Upload coverage to Codecov
+        if: ${{ success() }}
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          verbose: true
