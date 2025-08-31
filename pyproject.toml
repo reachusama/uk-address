@@ -14,7 +14,7 @@ maintainers = [
 description = "UK address utility based on machine learning and optimised search to parse, standardise, and compare addresses."
 readme = "README.md"
 license = { file = "LICENSE" }
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 keywords = ["parsing", "NER" ,"addresses", "UK", "postcode"]
 classifiers = [
   "Development Status :: 3 - Alpha",
